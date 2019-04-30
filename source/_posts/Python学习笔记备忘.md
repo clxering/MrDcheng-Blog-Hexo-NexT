@@ -2,7 +2,9 @@
 title: Python 学习笔记备忘
 date: 2019-04-26 17:24:49
 categories:
+- 后端技术
 tags:
+- python
 ---
 
 > 摘要：记录 Python 的学习笔记，是阅读《Python编程：从入门到实践》、《Python编程快速上手  让繁琐工作自动化》、《Python学习手册(第4版)》以及《Python高级编程-第2版》之后，经过有机整合而成。
@@ -450,16 +452,179 @@ while True:
 ## copy 模块的 copy() 和 deepcopy() 函数
 
 ```
->>> import copy
->>> spam = ['A', 'B', 'C', 'D']
->>> cheese = copy.copy(spam)
->>> cheese[1] = 42
+import copy
+spam = ['A', 'B', 'C', 'D']
+cheese = copy.copy(spam)
+cheese[1] = 42
+
 >>> spam
 ['A', 'B', 'C', 'D']
 >>> cheese
 ['A', 42, 'C', 'D']
 ```
 
+如果要复制的列表中包含了列表，那就使用copy.deepcopy()函数来代替。deepcopy()函数将同时复制它们内部的列表。
 
+```
+import copy
 
+numList = [1, 3, 5, [2, 6, 8]]
 
+numList2 = copy.copy(numList)
+numList2[3][0]="p"
+print(numList)
+print(numList2)
+
+# 输出，此时 numList 也被修改
+[1, 3, 5, ['p', 6, 8]]
+[1, 3, 5, ['p', 6, 8]]
+# 改为 numList2 = copy.deepcopy(numList)，则输出如下
+[1, 3, 5, [2, 6, 8]]
+[1, 3, 5, ['p', 6, 8]]
+```
+
+## get() 方法
+在访问一个键的值之前，检查该键是否存在于字典中，可使用 get() 方法，它有两个参数：要取得其值的键，以及如果该键不存在时，返回的备用值。
+
+```
+>>> picnicItems = {'apples': 5, 'cups': 2}
+>>> 'I am bringing ' + str(picnicItems.get('cups', 0)) + ' cups.'
+'I am bringing 2 cups.'
+>>> 'I am bringing ' + str(picnicItems.get('eggs', 0)) + ' eggs.'
+'I am bringing 0 eggs.'
+```
+
+因为 picnicItems 字典中没有 'egg' 键，get() 方法返回的默认值是 0。不使用 get()，代码就会产生一个错误消息，就像下面的例子：
+
+```
+>>> picnicItems = {'apples': 5, 'cups': 2}
+>>> 'I am bringing ' + str(picnicItems['eggs']) + ' eggs.'
+Traceback (most recent call last):
+File "<pyshell#34>", line 1, in <module>
+'I am bringing ' + str(picnicItems['eggs']) + ' eggs.'
+KeyError: 'eggs'
+```
+
+## setdefault() 方法
+你常常需要为字典中某个键设置一个默认值，当该键没有任何值时使用它。代码看起来像这样：
+
+```
+spam = {'name': 'Pooka', 'age': 5}
+
+if 'color' not in spam:
+    spam['color'] = 'black'
+```
+
+setdefault() 方法提供了一种方式，在一行中完成这件事。传递给该方法的第一个参数，是要检查的键。第二个参数，是如果该键不存在时要设置的值。如果该键确实存在，方法就会返回键的值：
+
+```
+>>> spam = {'name': 'Pooka', 'age': 5}
+>>> spam.setdefault('color', 'black')
+'black'
+>>> spam
+{'color': 'black', 'age': 5, 'name': 'Pooka'}
+>>> spam.setdefault('color', 'white')
+'black'
+>>> spam
+{'color': 'black', 'age': 5, 'name': 'Pooka'}
+```
+
+setdefault() 方法是一个很好的快捷方式，可以确保一个键存在。下面有一个小程序，计算一个字符串中每个字符出现的次数。打开一个文件编辑器窗口，输入以下代码：
+
+```
+message = 'It was a bright cold day in April, and the clocks were striking thirteen.'
+count = {}
+
+for character in message:
+    count.setdefault(character, 0)
+    count[character] = count[character] + 1
+    
+print(count)
+```
+
+程序循环迭代 message 字符串中的每个字符，计算每个字符出现的次数。setdefault() 方法调用确保了键存在于count 字典中（默认值是 0），这样在执行 `count[character] =count[character] + 1` 时，就不会抛出 KeyError 错误。程序运行时，输出如下：
+
+```
+{' ': 13, ',': 1, '.': 1, 'A': 1, 'I': 1, 'a': 4, 'c': 3, 'b': 1, 'e': 5, 'd': 3, 'g': 2, 'i':
+6, 'h': 3, 'k': 2, 'l': 3, 'o': 2, 'n': 4, 'p': 1, 's': 3, 'r': 5, 't': 6, 'w': 2, 'y': 1}
+```
+
+从输出可以看到，小写字母 c 出现了 3 次，空格字符出现了 13 次，大写字母 A 出现了 1 次。无论 message 变量中包含什么样的字符串，这个程序都能工作，即使该字符串有上百万的字符！
+
+## 原始字符串
+可以在字符串开始的引号之前加上 r，使它成为原始字符串。原始字符串完全忽略所有的转义字符，打印出字符串中所有的倒斜杠。
+
+```
+>>> print(r'That is Carol\'s cat.')
+That is Carol\'s cat.
+```
+
+## 用三重引号的多行字符串
+虽然可以用 \n 转义字符将换行放入一个字符串，但使用多行字符串通常更容易。在 Python 中，多行字符串的起止是 3 个单引号或 3 个双引号。三重引号之间的所有引号、制表符或换行，都被认为是字符串的一部分。Python 的代码块缩进规则不适用于多行字符串。
+
+```
+print('''Dear Alice,
+Eve's cat has been arrested for catnapping, cat burglary, and extortion.
+Sincerely,
+Bob''')
+```
+
+## 多行注释
+虽然井号字符（#）表示这一行是注释，但多行字符串常常用作多行注释。下面是完全有效的 Python 代码：
+
+```
+"""This is a test Python program.
+Written by Al Sweigart al@inventwithpython.com
+This program was designed for Python 3, not Python 2.
+"""
+def spam():
+    """This is a multiline comment to help
+    explain what the spam() function does."""
+    print('Hello!')
+```
+
+## 字符串下标和切片
+字符串像列表一样，使用下标和切片。可以将字符串 'Hello world!' 看成是一个列表，字符串中的每个字符都是一个表项，有对应的下标。
+
+## 字符串的 in 和 not in 操作符
+像列表一样，in 和 not in 操作符也可以用于字符串。用 in 或 not in 连接两个字符串得到的表达式，将求值为布尔值 True 或 False。
+
+## 字符串方法 upper()、lower()、isupper() 和 islower()
+upper() 和 lower() 字符串方法返回一个新字符串，其中原字符串的所有字母都被相应地转换为大写或小写。字符串中非字母字符保持不变。如果字符串至少有一个字母，并且所有字母都是大写或小写，isupper() 和 islower() 方法就会相应地返回布尔值 True。否则，该方法返回 False。
+
+## isX 字符串方法
+除了 islower() 和 isupper()，还有几个字符串方法，它们的名字以 is 开始。这些方法返回一个布尔值，描述了字符串的特点。下面是一些常用的 isX 字符串方法：
+- isalpha() 返回 True，如果字符串只包含字母，并且非空；
+- isalnum() 返回 True，如果字符串只包含字母和数字，并且非空；
+- isdecimal() 返回 True，如果字符串只包含数字字符，并且非空；
+- isspace() 返回 True，如果字符串只包含空格、制表符和换行，并且非空；
+- istitle() 返回 True，如果字符串仅包含以大写字母开头、后面都是小写字母的单词。
+
+## 字符串方法 startswith() 和 endswith()
+startswith() 和 endswith() 方法返回 True，如果它们所调用的字符串以该方法传入的字符串开始或结束。否则，方法返回 False。
+
+## 字符串方法 join() 和 split()
+如果有一个字符串列表，需要将它们连接起来，成为一个单独的字符串，join() 方法就很有用。join() 方法在一个字符串上调用，参数是一个字符串列表，返回一个字符串。返回的字符串由传入的列表中每个字符串连接而成。
+
+```
+>>> ', '.join(['cats', 'rats', 'bats'])
+'cats, rats, bats'
+>>> ' '.join(['My', 'name', 'is', 'Simon'])
+'My name is Simon'
+>>> 'ABC'.join(['My', 'name', 'is', 'Simon'])
+'MyABCnameABCisABCSimon'
+```
+
+join() 方法是针对一个字符串而调用的，并且传入一个列表值（很容易不小心用其他的方式调用它）。split()方法做的事情正好相反：它针对一个字符串调用，返回一个字符串列表。
+
+```
+>>> 'My name is Simon'.split()
+['My', 'name', 'is', 'Simon']
+>>> 'MyABCnameABCisABCSimon'.split('ABC')
+['My', 'name', 'is', 'Simon']
+>>> 'My name is Simon'.split('m')
+['My na', 'e is Si', 'on']
+```
+
+## 用 rjust()、ljust() 和 center() 方法对齐文本
+rjust() 和 ljust() 字符串方法返回调用它们的字符串的填充版本，通过插入空格来对齐文本。这两个方法的第一个参数是一个整数长度，用于对齐字符串。
