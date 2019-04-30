@@ -351,3 +351,43 @@ def describe_pet(animal_type, pet_name):
 
 describe_pet(animal_type='hamster', pet_name='harry')
 ```
+
+## 「类真」和「类假」
+数据类型中的某些值，条件认为它们等价于 True 或 False。在用于条件时，0、0.0、''（空字符串）被认为是 False，其他值被认为是 True。例子：
+```
+numList = []
+
+if numList:
+    print(len(numList))
+else:
+    print("no")
+```
+
+## range()
+该方法最多传入 3 个参数：range(a,b,c)，取值范围 [a,b)，步长 c。例如：`numList = list(range(1, 11, 2))`，赋值 [1, 3, 5, 7, 9]
+
+## 内建函数
+- random
+random.randint() 函数调用求值为传递给它的两个整数之间的一个随机整数。
+
+```
+import random
+    for i in range(5):
+    print(random.randint(1, 10))
+```
+
+- sys
+调用sys.exit()函数，可以让程序终止或退出。
+
+```
+import sys
+
+while True:
+    print('Type exit to exit.')
+    response = input()
+    if response == 'exit':
+        sys.exit()
+    print('You typed ' + response + '.')
+```
+
+
